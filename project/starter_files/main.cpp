@@ -155,7 +155,10 @@ void path_planner(vector<double>& x_points, vector<double>& y_points, vector<dou
   int best_spiral_idx = -1;
 
   if(best_spirals.size() > 0)
+  {
   	best_spiral_idx = best_spirals[best_spirals.size()-1];
+  	LOG(INFO) << "best_spiral_idx -> " << best_spiral_idx << "\n\n\n";
+  }
 
   int index = 0;
   int max_points = 20;

@@ -84,7 +84,7 @@ std::vector<State> MotionPlanner::generate_offset_goals(
 
   // TODO-Perpendicular direction: ADD pi/2 to the goal yaw
   // (goal_state.rotation.yaw)
-  //auto yaw = ;  // <- Fix This
+  auto yaw_perp = goal_state.rotation.yaw + M_PI/2;
 
   // LOG(INFO) << "MAIN GOAL";
   // LOG(INFO) << "x: " << goal_state.location.x << " y: " <<
@@ -109,8 +109,8 @@ std::vector<State> MotionPlanner::generate_offset_goals(
     // lie on a perpendicular line to the direction (yaw) of the main goal. You
     // calculated this direction above (yaw_plus_90). HINT: use
     // std::cos(yaw_plus_90) and std::sin(yaw_plus_90)
-    // goal_offset.location.x += ;  // <- Fix This
-    // goal_offset.location.y += ;  // <- Fix This
+    goal_offset.location.x += offset*std::cos(yaw_perp);
+    goal_offset.location.y += offset*std::sin(yaw_perp);
     // LOG(INFO) << "x: " << goal_offset.location.x
     //          << " y: " << goal_offset.location.y
     //          << " z: " << goal_offset.location.z
@@ -135,16 +135,18 @@ bool MotionPlanner::valid_goal(const State& main_goal,
 std::vector<int> MotionPlanner::get_best_spiral_idx(
     const std::vector<std::vector<PathPoint>>& spirals,
     const std::vector<State>& obstacles, const State& goal_state) {
-  // LOG(INFO) << "Num Spirals: " << spirals.size();
+  LOG(INFO) << "Num Spirals: " << spirals.size() << " MAX_COST: " << DBL_MAX;
   double best_cost = DBL_MAX;
   std::vector<int> collisions;
   int best_spiral_idx = -1;
   for (size_t i = 0; i < spirals.size(); ++i) {
     double cost = calculate_cost(spirals[i], obstacles, goal_state);
+    LOG(INFO) << i << " spiral cost -> " << cost;
 
     if (cost < best_cost) {
       best_cost = cost;
       best_spiral_idx = i;
+      LOG(INFO) << "NEW BEST " << i;
     }
     if (cost > DBL_MAX) {
       collisions.push_back(i);
